@@ -12,6 +12,18 @@ repositories {
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+    implementation group: 'org.reactivestreams', name: 'reactive-streams', version: '1.0.0'
+
+    compileOnly 'org.slf4j:slf4j-api:1.7.5'
+    compileOnly 'org.slf4j:slf4j-simple:1.7.21'
+    testCompileOnly 'org.slf4j:slf4j-api:1.7.5'
+    testCompileOnly 'org.slf4j:slf4j-simple:1.7.21'
+
+    compileOnly 'org.projectlombok:lombok:1.18.22'
+    annotationProcessor 'org.projectlombok:lombok:1.18.22'
+
+    testCompileOnly 'org.projectlombok:lombok:1.18.22'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.22'
 }
 
 test {
