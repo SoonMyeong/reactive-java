@@ -34,7 +34,6 @@ public class PubSubTestOperator {
         Publisher<Integer> mapPub = mapPub(pub, s->s*10);  //이러한 걸 Operator 라고 한다.
         Publisher<Integer> map2Pub = mapPub(mapPub, s->-s); //이러한 걸 Operator 라고 한다.
         map2Pub.subscribe(logSub());
-
     }
 
 //    @DisplayName("sumPub Operator 테스트")
