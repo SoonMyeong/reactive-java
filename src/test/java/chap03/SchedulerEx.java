@@ -8,7 +8,6 @@ import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 import reactor.core.publisher.Flux;
-import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
 import java.util.concurrent.ExecutorService;
@@ -153,7 +152,6 @@ public class SchedulerEx {
     @DisplayName("스케쥴러 #3 오퍼레이터를 이용해 PublishOn 과 SubscribeOn 같이 사용")
     @Test
     void test3(){
-        //TODO. 이거 순서 헤깔린다... 정리 다시 해야됨
 
         Publisher<Integer> pub = sub -> {
             sub.onSubscribe(new Subscription() {
@@ -175,15 +173,48 @@ public class SchedulerEx {
             });
         };
 
+//        Publisher<Integer> subOnPub = sub -> {
+//            ExecutorService es = Executors.newSingleThreadExecutor(new CustomizableThreadFactory() {
+//                @Override
+//                protected String getDefaultThreadNamePrefix() {
+//                    return "subOn-"; //thread 팩토리 이름 커스텀
+//                }
+//            });
+//            es.execute(()-> pub.subscribe(sub));
+//        };
+
         Publisher<Integer> subOnPub = sub -> {
-            ExecutorService es = Executors.newSingleThreadExecutor(new CustomizableThreadFactory() {
+            pub.subscribe(new Subscriber<Integer>() {
+                ExecutorService es = Executors.newSingleThreadExecutor(new CustomizableThreadFactory() {
+                    @Override
+                    protected String getDefaultThreadNamePrefix() {
+                        return "subOn-";
+                    }
+                });
                 @Override
-                protected String getDefaultThreadNamePrefix() {
-                    return "subOn-"; //thread 팩토리 이름 커스텀
+                public void onSubscribe(Subscription s) {
+                    es.execute(()->sub.onSubscribe(s));
+                }
+
+                @Override
+                public void onNext(Integer integer) {
+                    es.execute(()->sub.onNext(integer));
+                }
+
+                @Override
+                public void onError(Throwable t) {
+                    es.execute(()->sub.onError(t));
+                    es.shutdown();
+                }
+
+                @Override
+                public void onComplete() {
+                    es.execute(()->sub.onComplete());
+                    es.shutdown();
                 }
             });
-            es.execute(()-> pub.subscribe(sub));
         };
+
 
         Publisher<Integer> pubOnPub = sub -> {
             subOnPub.subscribe(new Subscriber<Integer>() {
@@ -208,11 +239,13 @@ public class SchedulerEx {
                 @Override
                 public void onError(Throwable t) {
                     es.execute(()->sub.onError(t));
+                    es.shutdown();
                 }
 
                 @Override
                 public void onComplete() {
                     es.execute(()->sub.onComplete());
+                    es.shutdown();
                 }
             });
         };
