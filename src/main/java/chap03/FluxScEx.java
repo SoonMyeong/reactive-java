@@ -1,8 +1,13 @@
 package chap03;
 
+import lombok.extern.slf4j.Slf4j;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 import reactor.core.publisher.Flux;
+import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
+@Slf4j
 public class FluxScEx {
 
     /**
@@ -12,11 +17,37 @@ public class FluxScEx {
      */
     //TODO. 스케쥴 thread shutdown
     public static void main(String[] args) {
+        Scheduler pub = Schedulers.newSingle("pub");
+        Scheduler sub = Schedulers.newSingle("sub");
         Flux.range(1,10)
-                .publishOn(Schedulers.newSingle("pub"))
+                .publishOn(pub)
                 .log()
-                .subscribeOn(Schedulers.newSingle("sub"))
-                .subscribe(System.out::println);
+                .subscribeOn(sub)
+                .subscribe(new Subscriber<Integer>() {
+                    @Override
+                    public void onSubscribe(Subscription s) {
+                        log.info("onSubscribe");
+                        s.request(Long.MAX_VALUE);
+                    }
+
+                    @Override
+                    public void onNext(Integer integer) {
+                        log.info("onNext :" , integer);
+                    }
+
+                    @Override
+                    public void onError(Throwable t) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        pub.dispose();
+                        sub.dispose();
+                    }
+                });
+
+
         System.out.println("exit");
     }
 }
