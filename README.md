@@ -12,3 +12,26 @@
 ### 비동기를 처리하기 위한 방법 
 - Future or Callback
 - Future 보단 Callback 구현하는게 더 우아함 (테스트코드 참고)
+- 스프링에서 @Async 를 쓰면 기본적으로 SimpleAsyncThread 가 동작 하는데 
+이 스레드의 문제는 요청 시 마다 무한히 계속 스레드를 생성하므로, 실무에서 잦은 @Async 를 사용시 자원을 매우 소모하게 된다.
+- 이 문제를 해결하기 위해 별도의 ThreadPoolTaskExecutor 를 리턴하는 bean 을 생성해 두면
+@Async 사용시 해당 ThreadPool 을 사용하게 된다! (중요) 
+
+``` 
+@Bean
+ThreadPoolTaskExecutor tp() {
+  ThreadPoolTaskExecutor te = new ThreadPoolTaskExecutor();
+  te.setCorePoolSize(10); //ex
+  te.setMaxPoolSize(100); //ex
+  te.setQueueCapacity(200); //ex
+  te.setRheadNamePrefix("test");
+  return te;
+}
+
+위 메서드에서 중요한 점은
+MaxPoolSize 의 경우 QueueCapa 한도 역시 가득 찰 경우
+MaxPoolSize 만큼 스레드가 생성되는 동작을 하게 된다.
+보통 QueueCapa 를 생각안하게 되는데 QueueCapa 를 잊지말 것 
+
+```
+
