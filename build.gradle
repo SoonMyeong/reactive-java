@@ -17,10 +17,10 @@ dependencies {
     implementation group: 'org.reactivestreams', name: 'reactive-streams', version: '1.0.0'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
-    compileOnly 'org.slf4j:slf4j-api:1.7.5'
-    compileOnly 'org.slf4j:slf4j-simple:1.7.21'
-    testCompileOnly 'org.slf4j:slf4j-api:1.7.5'
-    testCompileOnly 'org.slf4j:slf4j-simple:1.7.21'
+    compileOnly 'org.slf4j:slf4j-api:1.7.36'
+    compileOnly 'org.slf4j:slf4j-simple:1.7.36'
+    testCompileOnly 'org.slf4j:slf4j-api:1.7.36'
+    testCompileOnly 'org.slf4j:slf4j-simple:1.7.36'
 
     compileOnly 'org.projectlombok:lombok:1.18.22'
     annotationProcessor 'org.projectlombok:lombok:1.18.22'
