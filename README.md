@@ -35,3 +35,6 @@ MaxPoolSize 만큼 스레드가 생성되는 동작을 하게 된다.
 
 ```
 
+### [챕터7. CompletableFuture] 
+- 요즘 강의를 잘 안보고있어서 관심있던 CompletableFutre 먼저 보기..
+
